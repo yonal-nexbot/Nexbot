@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NexBot — AI Chatbots for Agencies</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink: #0a0a0f;
+    --ink-2: #3a3a4a;
+    --ink-3: #7a7a90;
+    --surface: #f8f7f4;
+    --white: #ffffff;
+    --accent: #5b4aff;
+    --accent-light: #ede9ff;
+    --accent-mid: #8b7fff;
+    --border: rgba(10,10,15,0.08);
+    --radius: 14px;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--surface);
+    color: var(--ink);
+    font-size: 16px;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, .brand { font-family: 'Syne', sans-serif; }
+
+  /* NAV */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 6vw;
+    background: rgba(248,247,244,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .brand {
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .brand span { color: var(--accent); }
+
+  .nav-cta {
+    background: var(--ink);
+    color: var(--white);
+    border: none;
+    padding: 10px 22px;
+    border-radius: 50px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    text-decoration: none;
+  }
+
+  .nav-cta:hover { background: var(--accent); transform: translateY(-1px); }
+
+  /* HERO */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 140px 6vw 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    top: -10%; left: 50%;
+    transform: translateX(-50%);
+    width: 800px;
+    height: 800px;
+    background: radial-gradient(ellipse at center, rgba(91,74,255,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--accent-light);
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 7px 16px;
+    border-radius: 50px;
+    margin-bottom: 32px;
+    border: 1px solid rgba(91,74,255,0.2);
+  }
+
+  .badge-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  h1 {
+    font-size: clamp(42px, 7vw, 86px);
+    font-weight: 800;
+    line-height: 1.05;
+    letter-spacing: -2.5px;
+    color: var(--ink);
+    max-width: 900px;
+    margin-bottom: 24px;
+  }
+
+  h1 em {
+    font-style: normal;
+    color: var(--accent);
+  }
+
+  .hero-sub {
+    font-size: clamp(16px, 2vw, 19px);
+    color: var(--ink-2);
+    max-width: 560px;
+    margin-bottom: 48px;
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  /* WAITLIST FORM */
+  .waitlist-box {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 36px 40px;
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 8px 40px rgba(10,10,15,0.07);
+    position: relative;
+  }
+
+  .waitlist-box h3 {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    margin-bottom: 6px;
+    color: var(--ink);
+  }
+
+  .waitlist-box p {
+    font-size: 13.5px;
+    color: var(--ink-3);
+    margin-bottom: 24px;
+  }
+
+  .form-row {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .form-input {
+    width: 100%;
+    padding: 13px 16px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    color: var(--ink);
+    background: var(--surface);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .form-input:focus { border-color: var(--accent); background: var(--white); }
+  .form-input::placeholder { color: var(--ink-3); }
+
+  .submit-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--accent);
+    color: var(--white);
+    border: none;
+    border-radius: 10px;
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+    letter-spacing: 0.2px;
+  }
+
+  .submit-btn:hover { background: #4535e0; transform: translateY(-1px); }
+  .submit-btn:active { transform: translateY(0); }
+
+  .social-proof {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+    font-size: 13px;
+    color: var(--ink-3);
+  }
+
+  .avatars {
+    display: flex;
+  }
+
+  .avatar {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: 2px solid var(--white);
+    margin-left: -8px;
+    font-size: 10px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--white);
+    font-family: 'Syne', sans-serif;
+  }
+
+  .avatar:first-child { margin-left: 0; }
+  .av1 { background: #5b4aff; }
+  .av2 { background: #ff6b6b; }
+  .av3 { background: #00c9a7; }
+  .av4 { background: #f7b731; }
+
+  /* SUCCESS STATE */
+  .success-state {
+    display: none;
+    text-align: center;
+    padding: 10px 0;
+  }
+
+  .checkmark {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: var(--accent-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 16px;
+    font-size: 24px;
+  }
+
+  /* LOGOS STRIP */
+  .logos-strip {
+    padding: 24px 6vw 0;
+    text-align: center;
+  }
+
+  .logos-strip p {
+    font-size: 12.5px;
+    color: var(--ink-3);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .logos-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    opacity: 0.45;
+  }
+
+  .logo-pill {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--ink-2);
+    letter-spacing: -0.5px;
+  }
+
+  /* SECTION */
+  section {
+    padding: 100px 6vw;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .section-label {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  h2 {
+    font-size: clamp(30px, 4vw, 48px);
+    font-weight: 800;
+    line-height: 1.1;
+    letter-spacing: -1.5px;
+    color: var(--ink);
+    max-width: 600px;
+    margin-bottom: 20px;
+  }
+
+  .section-sub {
+    font-size: 17px;
+    color: var(--ink-2);
+    max-width: 520px;
+    line-height: 1.7;
+    margin-bottom: 60px;
+    font-weight: 300;
+  }
+
+  /* FEATURES GRID */
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .feature-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .feature-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px rgba(10,10,15,0.08);
+  }
+
+  .feature-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    background: var(--accent-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 18px;
+    font-size: 20px;
+  }
+
+  .feature-card h3 {
+    font-size: 17px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    margin-bottom: 10px;
+    color: var(--ink);
+  }
+
+  .feature-card p {
+    font-size: 14.5px;
+    color: var(--ink-2);
+    line-height: 1.65;
+    font-weight: 300;
+  }
+
+  /* HOW IT WORKS */
+  .how-section {
+    background: var(--ink);
+    padding: 100px 6vw;
+  }
+
+  .how-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .how-section .section-label { color: var(--accent-mid); }
+  .how-section h2 { color: var(--white); }
+  .how-section .section-sub { color: rgba(255,255,255,0.5); }
+
+  .steps-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 2px;
+    background: rgba(255,255,255,0.06);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+
+  .step {
+    background: var(--ink);
+    padding: 36px 30px;
+    position: relative;
+  }
+
+  .step-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 48px;
+    font-weight: 800;
+    color: rgba(91,74,255,0.25);
+    line-height: 1;
+    margin-bottom: 16px;
+  }
+
+  .step h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 10px;
+  }
+
+  .step p {
+    font-size: 14px;
+    color: rgba(255,255,255,0.45);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  /* PRICING */
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 20px;
+    align-items: start;
+  }
+
+  .price-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 32px 28px;
+    position: relative;
+    transition: transform 0.2s;
+  }
+
+  .price-card:hover { transform: translateY(-3px); }
+
+  .price-card.featured {
+    border-color: var(--accent);
+    border-width: 2px;
+  }
+
+  .popular-badge {
+    position: absolute;
+    top: -13px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent);
+    color: var(--white);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 5px 14px;
+    border-radius: 50px;
+    font-family: 'Syne', sans-serif;
+    white-space: nowrap;
+  }
+
+  .plan-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    margin-bottom: 12px;
+  }
+
+  .plan-price {
+    font-family: 'Syne', sans-serif;
+    font-size: 38px;
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+
+  .plan-price span {
+    font-size: 16px;
+    font-weight: 400;
+    color: var(--ink-3);
+    letter-spacing: 0;
+  }
+
+  .plan-desc {
+    font-size: 13.5px;
+    color: var(--ink-3);
+    margin-bottom: 24px;
+    line-height: 1.5;
+  }
+
+  .plan-divider {
+    height: 1px;
+    background: var(--border);
+    margin-bottom: 20px;
+  }
+
+  .plan-features {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 11px;
+    margin-bottom: 28px;
+  }
+
+  .plan-features li {
+    font-size: 14px;
+    color: var(--ink-2);
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .check {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--accent-light);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  .check::after {
+    content: '';
+    width: 6px; height: 4px;
+    border-left: 1.5px solid var(--accent);
+    border-bottom: 1.5px solid var(--accent);
+    transform: rotate(-45deg) translateY(-1px);
+    display: block;
+  }
+
+  .plan-btn {
+    width: 100%;
+    padding: 13px;
+    border-radius: 10px;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    color: var(--ink);
+  }
+
+  .plan-btn.primary {
+    background: var(--accent);
+    color: var(--white);
+    border-color: var(--accent);
+  }
+
+  .plan-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+
+  /* CTA BOTTOM */
+  .cta-bottom {
+    padding: 100px 6vw;
+    text-align: center;
+    background: var(--accent);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-bottom h2 {
+    color: var(--white);
+    max-width: 600px;
+    margin: 0 auto 16px;
+    font-size: clamp(28px, 4vw, 46px);
+  }
+
+  .cta-bottom p {
+    color: rgba(255,255,255,0.7);
+    font-size: 17px;
+    max-width: 450px;
+    margin: 0 auto 36px;
+    font-weight: 300;
+  }
+
+  .cta-bottom-form {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  .cta-bottom-form input {
+    flex: 1;
+    min-width: 220px;
+    padding: 14px 18px;
+    border-radius: 10px;
+    border: none;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    outline: none;
+    background: rgba(255,255,255,0.15);
+    color: var(--white);
+  }
+
+  .cta-bottom-form input::placeholder { color: rgba(255,255,255,0.5); }
+  .cta-bottom-form input:focus { background: rgba(255,255,255,0.22); }
+
+  .cta-bottom-form button {
+    padding: 14px 26px;
+    background: var(--ink);
+    color: var(--white);
+    border: none;
+    border-radius: 10px;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    white-space: nowrap;
+  }
+
+  .cta-bottom-form button:hover { opacity: 0.8; }
+
+  /* FOOTER */
+  footer {
+    padding: 40px 6vw;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid var(--border);
+    flex-wrap: gap;
+  }
+
+  footer p {
+    font-size: 13px;
+    color: var(--ink-3);
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .hero > * {
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .hero > *:nth-child(1) { animation-delay: 0.1s; }
+  .hero > *:nth-child(2) { animation-delay: 0.2s; }
+  .hero > *:nth-child(3) { animation-delay: 0.3s; }
+  .hero > *:nth-child(4) { animation-delay: 0.45s; }
+
+  @media (max-width: 600px) {
+    .waitlist-box { padding: 28px 22px; }
+    .steps-grid { grid-template-columns: 1fr; }
+    .cta-bottom-form { flex-direction: column; }
+    footer { flex-direction: column; gap: 12px; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="brand">Nex<span>Bot</span></a>
+  <a href="#waitlist" class="nav-cta">Join waitlist →</a>
+</nav>
+
+<!-- HERO -->
+<div class="hero" id="top">
+  <div class="hero-bg"></div>
+
+  <div class="badge">
+    <div class="badge-dot"></div>
+    Now accepting early access requests
+  </div>
+
+  <h1>AI chatbots that<br><em>close deals</em> for<br>your agency</h1>
+
+  <p class="hero-sub">NexBot builds, deploys, and manages custom AI support agents for agencies and freelancers — so you stop losing leads to slow response times.</p>
+
+  <div class="waitlist-box" id="waitlist">
+    <h3>Get early access</h3>
+    <p>Limited spots. Be first to launch with NexBot.</p>
+
+    <div id="form-state">
+      <div class="form-row">
+        <input type="text" class="form-input" id="name-input" placeholder="Your name" />
+        <input type="email" class="form-input" id="email-input" placeholder="Work email" />
+        <select class="form-input" id="role-input" style="cursor:pointer;">
+          <option value="" disabled selected>What best describes you?</option>
+          <option>Agency owner</option>
+          <option>Freelancer</option>
+          <option>Digital marketer</option>
+          <option>Consultant</option>
+          <option>Other</option>
+        </select>
+        <button class="submit-btn" onclick="submitWaitlist()">Secure my spot →</button>
+      </div>
+      <div class="social-proof">
+        <div class="avatars">
+          <div class="avatar av1">AL</div>
+          <div class="avatar av2">MR</div>
+          <div class="avatar av3">JP</div>
+          <div class="avatar av4">KS</div>
+        </div>
+        <span>47 agencies already joined</span>
+      </div>
+    </div>
+
+    <div class="success-state" id="success-state">
+      <div class="checkmark">✓</div>
+      <h3 style="margin-bottom:8px;">You're on the list</h3>
+      <p style="font-size:14px; color:var(--ink-3); margin:0;">We'll reach out when your spot is ready. Expect an email within 48h.</p>
+    </div>
+  </div>
+</div>
+
+<!-- LOGO STRIP -->
+<div class="logos-strip">
+  <p>Used by teams at</p>
+  <div class="logos-row">
+    <span class="logo-pill">Webflow</span>
+    <span class="logo-pill">Monday</span>
+    <span class="logo-pill">HubSpot</span>
+    <span class="logo-pill">Notion</span>
+    <span class="logo-pill">Shopify</span>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section>
+  <p class="section-label">What we do</p>
+  <h2>Everything your clients need, nothing they don't</h2>
+  <p class="section-sub">We build AI customer support agents trained on your client's brand, deployed in 48 hours.</p>
+
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">🤖</div>
+      <h3>Custom-trained agents</h3>
+      <p>Each chatbot is trained on your client's knowledge base, tone of voice, and FAQ — no generic responses.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <h3>48-hour deployment</h3>
+      <p>From onboarding call to live chatbot in two days. No weeks of back-and-forth or technical delays.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔌</div>
+      <h3>Plug into any stack</h3>
+      <p>Works with Notion, HubSpot, Slack, Intercom, Webflow, and any website via a simple embed code.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <h3>Live analytics dashboard</h3>
+      <p>Track conversations, resolution rates, and lead capture. White-label the dashboard for your clients.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔄</div>
+      <h3>Handoff to human</h3>
+      <p>When the AI can't answer, it escalates seamlessly to a live agent — no dropped conversations.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🏷️</div>
+      <h3>White-label ready</h3>
+      <p>Sell NexBot agents under your own agency brand. Your clients never see our name.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<div class="how-section">
+  <div class="how-inner">
+    <p class="section-label">How it works</p>
+    <h2 style="color:var(--white);">Live in 3 steps</h2>
+    <p class="section-sub" style="color:rgba(255,255,255,0.45);">No dev team. No weeks of setup. Just a working AI agent your clients can actually use.</p>
+
+    <div class="steps-grid">
+      <div class="step">
+        <div class="step-num">01</div>
+        <h3>Onboarding call</h3>
+        <p>30 minutes. We collect your client's knowledge base, tone, and key use cases.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <h3>We build it</h3>
+        <p>Our team trains the AI agent, connects integrations, and stress-tests every edge case.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <h3>You deploy</h3>
+        <p>One embed snippet. The agent goes live on your client's site and starts responding instantly.</p>
+      </div>
+      <div class="step">
+        <div class="step-num">04</div>
+        <h3>We maintain</h3>
+        <p>Monthly updates, retraining as the business grows, and 24/7 uptime monitoring — included.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PRICING -->
+<section>
+  <p class="section-label">Pricing</p>
+  <h2>Simple, predictable plans</h2>
+  <p class="section-sub">Priced for agencies reselling to multiple clients. The more clients you add, the more you earn.</p>
+
+  <div class="pricing-grid">
+    <div class="price-card">
+      <div class="plan-name">Starter</div>
+      <div class="plan-price">€297 <span>/ mo</span></div>
+      <div class="plan-desc">For freelancers and solo consultants with 1–2 clients.</div>
+      <div class="plan-divider"></div>
+      <ul class="plan-features">
+        <li><span class="check"></span>Up to 2 AI agents</li>
+        <li><span class="check"></span>5,000 conversations / mo</li>
+        <li><span class="check"></span>48h deployment</li>
+        <li><span class="check"></span>1 integration per agent</li>
+        <li><span class="check"></span>Analytics dashboard</li>
+      </ul>
+      <button class="plan-btn" onclick="document.getElementById('waitlist').scrollIntoView({behavior:'smooth'})">Join waitlist</button>
+    </div>
+
+    <div class="price-card featured">
+      <div class="popular-badge">Most popular</div>
+      <div class="plan-name">Agency</div>
+      <div class="plan-price">€697 <span>/ mo</span></div>
+      <div class="plan-desc">For growing agencies managing 5–10 clients at once.</div>
+      <div class="plan-divider"></div>
+      <ul class="plan-features">
+        <li><span class="check"></span>Up to 10 AI agents</li>
+        <li><span class="check"></span>25,000 conversations / mo</li>
+        <li><span class="check"></span>White-label dashboard</li>
+        <li><span class="check"></span>Unlimited integrations</li>
+        <li><span class="check"></span>Human handoff flows</li>
+        <li><span class="check"></span>Priority support</li>
+      </ul>
+      <button class="plan-btn primary" onclick="document.getElementById('waitlist').scrollIntoView({behavior:'smooth'})">Join waitlist →</button>
+    </div>
+
+    <div class="price-card">
+      <div class="plan-name">Scale</div>
+      <div class="plan-price">Custom</div>
+      <div class="plan-desc">For agencies with 10+ clients or enterprise requirements.</div>
+      <div class="plan-divider"></div>
+      <ul class="plan-features">
+        <li><span class="check"></span>Unlimited agents</li>
+        <li><span class="check"></span>Unlimited conversations</li>
+        <li><span class="check"></span>Dedicated account manager</li>
+        <li><span class="check"></span>Custom integrations</li>
+        <li><span class="check"></span>SLA guarantee</li>
+      </ul>
+      <button class="plan-btn" onclick="document.getElementById('waitlist').scrollIntoView({behavior:'smooth'})">Talk to us</button>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BOTTOM -->
+<div class="cta-bottom">
+  <h2>Be first when we launch</h2>
+  <p>Founding members get 3 months at 50% off. Spots are capped at 100 agencies.</p>
+  <div class="cta-bottom-form">
+    <input type="email" id="bottom-email" placeholder="Enter your email" />
+    <button onclick="submitBottom()">Get early access</button>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <a href="#" class="brand" style="font-size:18px;">Nex<span>Bot</span></a>
+  <p>© 2025 NexBot. All rights reserved.</p>
+  <p><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="0e666b6262614e606b766c617a206761">[email&#160;protected]</a></p>
+</footer>
+
+<script>
+const NOTION_DB = '7f58772f447c427cb684290bb518229b';
+
+async function saveToNotion(name, email, role) {
+  try {
+    await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 500,
+        mcp_servers: [{ type: 'url', url: 'https://mcp.notion.com/mcp', name: 'notion' }],
+        messages: [{
+          role: 'user',
+          content: `Add a new entry to the NexBot Waitlist Notion database (ID: ${NOTION_DB}) with these details:
+Name: ${name}
+Email: ${email}
+Role: ${role || 'Other'}
+Status: New
+
+Use the notion create-pages tool to add this record.`
+        }]
+      })
+    });
+  } catch(e) {
+    console.error('Notion save failed:', e);
+  }
+}
+
+async function submitWaitlist() {
+  const name = document.getElementById('name-input').value.trim();
+  const email = document.getElementById('email-input').value.trim();
+  const role = document.getElementById('role-input').value;
+
+  if (!name || !email) {
+    document.getElementById('name-input').style.borderColor = '#e24b4a';
+    document.getElementById('email-input').style.borderColor = '#e24b4a';
+    setTimeout(() => {
+      document.getElementById('name-input').style.borderColor = '';
+      document.getElementById('email-input').style.borderColor = '';
+    }, 2000);
+    return;
+  }
+
+  document.getElementById('form-state').style.display = 'none';
+  document.getElementById('success-state').style.display = 'block';
+
+  await saveToNotion(name, email, role);
+}
+
+async function submitBottom() {
+  const email = document.getElementById('bottom-email').value.trim();
+  if (!email) return;
+  await saveToNotion('(bottom form)', email, 'Other');
+  document.getElementById('
